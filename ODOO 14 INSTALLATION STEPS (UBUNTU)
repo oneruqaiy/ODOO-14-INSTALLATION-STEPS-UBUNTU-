@@ -1,0 +1,126 @@
+ODOO 14 INSTALLATION STEPS (UBUNTU)
+
+1) Update the system.
+sudo apt-get update
+
+sudo apt-get upgrade
+
+2) Make sure that the server is accessible remotely.
+sudo apt-get install openssh-server fail2ban
+
+3) Create a system user for Odoo with the home directory /opt/odoo.
+sudo adduser --system --home=/opt/odoo --group odoo
+
+4) Install postgreSQL.
+sudo apt-get install postgresql
+
+5) Switch to postgres user.
+sudo su - postgres
+
+6) Create a postgres user for Odoo.
+createuser --createdb --username postgres --no-createrole --no-superuser --pwprompt odoo
+
+7) Give access to the user as Super user by running the following two commands.
+psql
+
+ALTER USER odoo WITH SUPERUSER;
+
+\q
+
+8) Exit from Postgres.
+
+9) Install github(If not installed).
+sudo apt-get install git
+
+10) Switch to the system user for Odoo that we created just before.
+sudo su - odoo -s /bin/bash
+
+11) Clone the Odoo(Take care of the version. Here we clone Odoo version 14.0).
+git clone https://www.github.com/odoo/odoo --depth 1 --branch 14.0 --single-branch .
+
+12) Check all the folders and files are fetched from Odoo Github account.
+ls
+
+13) Exit from the Odoo system user.
+
+14) Install python pip3 for installing Odoo dependencies and packages.
+sudo apt-get install -y python3-pip
+
+15) Run the requirement.txt file to install all the odoo required dependencies and packages in one command.
+sudo pip3 install -r requirements.txt
+
+16) If you get any error while installing requirements, run these commands
+    • If the error is related to libxml
+			sudo apt-get install libxml2-dev libxslt1-dev
+    • If the error is related to psycopg2
+
+sudo apt install libpq-dev
+    • If the error is related to python-ldap
+			sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
+
+17) Install the following web dependencies.
+sudo apt-get install -y npm
+
+sudo ln -s /usr/bin/nodejs /usr/bin/node
+
+sudo npm install -g less less-plugin-clean-css
+
+sudo apt-get install -y node-less
+
+18) Install wkhtmltopdf in order to get reports in PDF formats by running the following commands.
+    • sudo wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb
+    • sudo apt install -f 
+    • sudo dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb
+    
+(swipe last two steps if the error occurred)
+
+19) Configure conf file and log file.
+a) Create a log file
+sudo mkdir /var/log/odoo
+
+b) Give full access to this file to the Odoo user
+sudo chown odoo:root /var/log/odoo
+
+c) Copy Odoo default conf file to the custom path we want.
+sudo cp /opt/odoo/debian/odoo.conf /etc/odoo.conf
+
+d) Change the wanted configurations.
+sudo nano /etc/odoo.conf
+
+e) Set ownership of this file to the Odoo user.
+
+f) 
+sudo chown odoo: /etc/odoo.conf
+
+sudo chmod 640 /etc/odoo.conf
+
+20) Service file for Odoo.
+a) Create a service file.
+sudo nano /etc/systemd/system/odoo.service
+
+b) Copy the following content in the created service file.
+
+[Unit]
+Description=Odoo
+Documentation=http://www.odoo.com
+[Service]
+# Ubuntu/Debian convention:
+Type=simple
+User=odoo
+ExecStart=/opt/odoo/odoo-bin -c /etc/odoo.conf
+[Install]
+WantedBy=default.target
+
+c) Give full permission to this file to the Odoo user
+sudo chmod 755 /etc/systemd/system/odoo.service
+
+sudo chown root: /etc/systemd/system/odoo.service
+
+21) Start Odoo service.
+sudo systemctl start odoo.service
+
+22) Check Odoo running log file
+sudo tail -f /var/log/odoo/odoo.log
+
+
+
