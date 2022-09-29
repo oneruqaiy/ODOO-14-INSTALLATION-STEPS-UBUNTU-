@@ -4,6 +4,5 @@
 
 this will work with:
 
-Ubuntu 20.04 
-Oracal VB
+Ubuntu 20.04  / Oracal VB
 
